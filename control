@@ -1,0 +1,9 @@
+Package: com.enricozb.mu
+Name: Mu
+Version: 0.0.1
+Architecture: iphoneos-arm
+Description: Music serve
+Maintainer: Enrico Z. Borba
+Author: Enrico Z. Borba
+Section: Utilities
+Depends: ${LIBSWIFT}
