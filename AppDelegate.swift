@@ -10,6 +10,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     let contentView = MainView().environment(\.managedObjectContext, context)
 
+    let newAppearance = UINavigationBarAppearance()
+    newAppearance.configureWithOpaqueBackground()
+    newAppearance.backgroundColor = .black
+    newAppearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+
+    UINavigationBar.appearance().standardAppearance = newAppearance
+
     window = UIWindow(frame: UIScreen.main.bounds)
     window!.rootViewController = UIHostingController(rootView: contentView)
     window!.makeKeyAndVisible()

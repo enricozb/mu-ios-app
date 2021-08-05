@@ -1,13 +1,18 @@
 import SwiftUI
 
 struct MainView: View {
+  @State var songs = [Song]()
+
   var body: some View {
     TabView {
-      SongsView()
-        .tabItem {
-          Image(systemName: "music.note.list")
-          Text("Songs")
-        }
+      NavigationView {
+        SongsList(songs: songs)
+          .navigationBarTitle("Songs")
+      }
+      .tabItem {
+        Image(systemName: "music.note.list")
+        Text("Songs")
+      }
 
       Text("Albums")
         .font(.system(size: 30, weight: .bold, design: .rounded))
@@ -22,26 +27,6 @@ struct MainView: View {
           Image(systemName: "person.fill")
           Text("Artists")
         }
-    }
-  }
-}
-
-struct Song: Codable, Identifiable {
-  var id: String
-  var album: String
-  var artist: String
-  var duration: String
-  var title: String
-  var year: String?
-  var track: String?
-}
-
-struct SongsView: View {
-  @State var songs = [Song]()
-
-  var body: some View {
-    List(songs) { song in
-      Text(song.title)
     }
     .onAppear(perform: load)
   }
@@ -63,6 +48,7 @@ struct SongsView: View {
             for (_, song) in songs {
               self.songs.append(song)
             }
+            self.songs.sort(by: { x, y in x.title < y.title })
           }
         } catch {
           NSLog("nugget: json error \(error.localizedDescription)")
