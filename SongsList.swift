@@ -24,14 +24,18 @@ struct SongRow: View {
   let song: Song
 
   var body: some View {
-    VStack(alignment: .leading) {
-      Text(song.title)
-        .lineLimit(1)
-      HStack {
-        Text("\(song.artist) · \(song.album)")
-          .font(.caption)
-          .foregroundColor(.gray)
+    HStack {
+      Cover(album: song.album)
+        .frame(width: 50, height: 50)
+      VStack(alignment: .leading) {
+        Text(song.title)
           .lineLimit(1)
+        HStack {
+          Text("\(song.artist) · \(song.album)")
+            .font(.caption)
+            .foregroundColor(.gray)
+            .lineLimit(1)
+        }
       }
     }
   }

@@ -32,16 +32,16 @@ struct MainView: View {
   }
 
   func load() {
-    NSLog("nugget: load")
+    log("load")
 
     guard let url = URL(string: "http://192.168.2.147:4000/songs") else {
-      NSLog("nugget: Invalid URL")
+      log("Invalid URL")
       return
     }
 
     URLSession.shared.dataTask(with: URLRequest(url: url)) { data, _, error in
       if let data = data {
-        NSLog("nugget: data -> \(data)")
+        log("data -> \(data)")
         do {
           let songs = try JSONDecoder().decode([String: Song].self, from: data)
           DispatchQueue.main.async {
@@ -51,11 +51,11 @@ struct MainView: View {
             self.songs.sort(by: { x, y in x.title < y.title })
           }
         } catch {
-          NSLog("nugget: json error \(error.localizedDescription)")
+          log("json error \(error.localizedDescription)")
         }
+      } else {
+        log("Fetch failed: \(error?.localizedDescription ?? "Unknown error")")
       }
-
-      NSLog("nugget: Fetch failed: \(error?.localizedDescription ?? "Unknown error")")
     }.resume()
   }
 }
