@@ -11,11 +11,9 @@ struct Song: Codable, Identifiable, Hashable {
 }
 
 struct SongsList: View {
-  var sections: [String: [Song]]
+  var sections = [String: [Song]]()
 
   init(songs: [Song]) {
-    sections = [String: [Song]]()
-
     for song in songs {
       var char = "#"
       if let first = song.title.first, first.isLetter {
@@ -29,27 +27,30 @@ struct SongsList: View {
   }
 
   var body: some View {
-    ZStack {
-      NavigationView {
+    ScrollViewReader { proxy in
+      ZStack {
         List {
           ForEach(sections.keys.sorted(), id: \.self) { char in
-            Section(header: Text(String(char))) {
-              ForEach(sections[String(char)]!, id: \.self) { song in
+            Section(header: Text(char)) {
+              ForEach(sections[char]!, id: \.self) { song in
                 SongRow(song: song)
               }
             }
+            .id(char)
           }
-        }
-        .navigationBarTitle("Songs")
-      }
+        }.listStyle(InsetGroupedListStyle())
 
-      // right-hand side selector
-      HStack {
-        Spacer()
-        VStack {
-          ForEach(sections.keys.sorted(), id: \.self) { char in
-            Text(String(char))
-              .font(.caption)
+        // right - hand side selector
+        HStack {
+          Spacer()
+          VStack {
+            ForEach(sections.keys.sorted(), id: \.self) { char in
+              Button(action: {
+                withAnimation {
+                  proxy.scrollTo(char, anchor: .top)
+                }
+              }, label: { Text(char).font(.system(size: 10, weight: .bold, design: .rounded)) })
+            }
           }
         }
       }
