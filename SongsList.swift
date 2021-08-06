@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct Song: Codable, Identifiable {
+struct Song: Codable, Identifiable, Hashable {
   var id: String
   var album: String
   var artist: String
@@ -11,11 +11,48 @@ struct Song: Codable, Identifiable {
 }
 
 struct SongsList: View {
-  var songs: [Song]
+  var sections: [String: [Song]]
+
+  init(songs: [Song]) {
+    sections = [String: [Song]]()
+
+    for song in songs {
+      var char = "#"
+      if let first = song.title.first, first.isLetter {
+        char = first.uppercased()
+      }
+
+      sections[char] = sections[char] != nil ? sections[char]! + [song] : [song]
+    }
+
+    UITableView.appearance().showsVerticalScrollIndicator = false
+  }
 
   var body: some View {
-    List(songs) { song in
-      SongRow(song: song)
+    ZStack {
+      NavigationView {
+        List {
+          ForEach(sections.keys.sorted(), id: \.self) { char in
+            Section(header: Text(String(char))) {
+              ForEach(sections[String(char)]!, id: \.self) { song in
+                SongRow(song: song)
+              }
+            }
+          }
+        }
+        .navigationBarTitle("Songs")
+      }
+
+      // right-hand side selector
+      HStack {
+        Spacer()
+        VStack {
+          ForEach(sections.keys.sorted(), id: \.self) { char in
+            Text(String(char))
+              .font(.caption)
+          }
+        }
+      }
     }
   }
 }

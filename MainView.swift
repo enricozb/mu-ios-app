@@ -5,14 +5,11 @@ struct MainView: View {
 
   var body: some View {
     TabView {
-      NavigationView {
-        SongsList(songs: songs)
-          .navigationBarTitle("Songs")
-      }
-      .tabItem {
-        Image(systemName: "music.note.list")
-        Text("Songs")
-      }
+      SongsList(songs: songs)
+        .tabItem {
+          Image(systemName: "music.note.list")
+          Text("Songs")
+        }
 
       Text("Albums")
         .font(.system(size: 30, weight: .bold, design: .rounded))

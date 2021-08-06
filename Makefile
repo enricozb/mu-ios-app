@@ -1,5 +1,5 @@
-THEOS_DEVICE_IP = 192.168.2.133
-TARGET := iphone:clang:13.0
+THEOS_DEVICE_IP = 192.168.2.104
+TARGET := iphone:clang:14.4
 INSTALL_TARGET_PROCESSES = Mu
 
 include $(THEOS)/makefiles/common.mk
