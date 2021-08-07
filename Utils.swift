@@ -1,8 +1,10 @@
 import Foundation
 
-func alphabetBuckets<E>(els: [E], key: (E) -> String) -> [String: [E]] {
-  log("alphabetize: \(els)")
+func computeSections(els: [String]) -> [String: [String]] {
+  computeSections(els: els, key: { s in s })
+}
 
+func computeSections<E>(els: [E], key: (E) -> String) -> [String: [E]] {
   var buckets = [String: [E]]()
 
   for el in els {

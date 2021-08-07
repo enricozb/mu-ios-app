@@ -14,7 +14,7 @@ struct SongsList: View {
   let sections: [String: [Song]]
 
   init(songs: [Song]) {
-    sections = alphabetBuckets(els: songs, key: \.title)
+    sections = computeSections(els: songs, key: \.title)
 
     UITableView.appearance().showsVerticalScrollIndicator = false
   }
@@ -25,7 +25,7 @@ struct SongsList: View {
         List {
           ForEach(sections.keys.sorted(), id: \.self) { char in
             Section(header: SectionHeader(char: char)) {
-              ForEach(sections[char]!, id: \.self) { song in
+              ForEach(sections[char]!.sorted(by: { $0.title < $1.title }), id: \.self) { song in
                 SongRow(song: song)
               }
             }
@@ -63,6 +63,7 @@ struct SongRow: View {
     HStack {
       Cover(album: song.album)
         .frame(width: 50, height: 50)
+        .cornerRadius(3)
       VStack(alignment: .leading) {
         Text(song.title)
           .lineLimit(1)
@@ -90,7 +91,7 @@ struct SectionHeader: View {
         Spacer()
       }
       .padding(5)
-      .background(Color.black)
+      .background(Color(UIColor.systemBackground))
 
       HStack {
         Text(char)

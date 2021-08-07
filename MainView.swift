@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct MainView: View {
+  @State var albums = [Album]()
   @State var songs = [Song]()
-  @State var albums = [String: [Song]]()
 
   var body: some View {
     TabView {
@@ -49,11 +49,7 @@ struct MainView: View {
         do {
           let songs = try JSONDecoder().decode([String: Song].self, from: data)
           DispatchQueue.main.async {
-            var songsFlat = [Song]()
-            for (_, song) in songs {
-              songsFlat.append(song)
-            }
-            self.songs = songsFlat
+            setData(songs: songs)
           }
         } catch {
           log("json error \(error.localizedDescription)")
@@ -62,5 +58,18 @@ struct MainView: View {
         log("Fetch failed: \(error?.localizedDescription ?? "Unknown error")")
       }
     }.resume()
+  }
+
+  func setData(songs byID: [String: Song]) {
+    var songs = [Song]()
+    var albums = [String: [Song]]()
+
+    for (_, song) in byID {
+      songs.append(song)
+      albums[song.album] = albums[song.album] != nil ? albums[song.album]! + [song] : [song]
+    }
+
+    self.albums = albums.map { title, songs in Album(id: title, songs: songs) }
+    self.songs = songs
   }
 }
