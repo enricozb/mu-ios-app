@@ -36,7 +36,7 @@ struct MainView: View {
   }
 
   func load() {
-    log("load")
+    log("loading songs")
 
     guard let url = URL(string: "http://192.168.2.147:4000/songs") else {
       log("Invalid URL")
@@ -45,7 +45,7 @@ struct MainView: View {
 
     URLSession.shared.dataTask(with: URLRequest(url: url)) { data, _, error in
       if let data = data {
-        log("data -> \(data)")
+        log("received \(data) for song data")
         do {
           let songs = try JSONDecoder().decode([String: Song].self, from: data)
           DispatchQueue.main.async {

@@ -21,26 +21,30 @@ class URLImageCache {
 
       callbacks[url] = [callback]
 
-      URLSession.shared.dataTask(
-        with: URL(string: url)!,
-        completionHandler: { data, _, error in
-          guard error == nil else {
-            log("handle image: error: \(error!)")
-            return
-          }
-          guard let data = data else {
-            log("handle image: no data")
-            return
-          }
+      load(url: url)
+    }
+  }
 
-          DispatchQueue.main.async {
-            guard let image = UIImage(data: data) else { return }
-            self.publish(url: url, image: image)
-          }
+  func load(url: String) {
+    URLSession.shared.dataTask(
+      with: URL(string: url)!,
+      completionHandler: { data, _, error in
+        guard error == nil else {
+          log("handle image: error: \(error!)")
+          return
+        }
+        guard let data = data else {
+          log("handle image: no data")
+          return
         }
 
-      ).resume()
-    }
+        DispatchQueue.main.async {
+          guard let image = UIImage(data: data) else { return }
+          self.publish(url: url, image: image)
+        }
+      }
+
+    ).resume()
   }
 
   func publish(url: String, image: UIImage) {

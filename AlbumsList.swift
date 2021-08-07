@@ -82,23 +82,22 @@ struct AlbumView: View {
             .overlay(
               RoundedRectangle(cornerRadius: 7)
                 .stroke(Color(UIColor.lightGray), lineWidth: 0.3)
-            ).onTapGesture {
+            )
+            .onTapGesture {
               self.selected = true
               log("touched: \(album.id)")
             }
         }
 
-        VStack(alignment: .leading) {
-          Text(album.id)
-            .frame(width: 150, alignment: .leading)
-            .font(.caption)
-            .lineLimit(1)
-          Text(album.songs.count > 0 ? album.songs[0].artist : "???")
-            .frame(width: 150, alignment: .leading)
-            .font(.caption)
-            .lineLimit(1)
-            .foregroundColor(.gray)
-        }
+        Text(album.id)
+          .frame(width: 150, alignment: .leading)
+          .font(.caption)
+          .lineLimit(1)
+        Text(album.songs.count > 0 ? album.songs[0].artist : "???")
+          .frame(width: 150, alignment: .leading)
+          .font(.caption)
+          .lineLimit(1)
+          .foregroundColor(.gray)
       }
     }
   }
