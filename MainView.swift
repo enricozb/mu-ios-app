@@ -29,6 +29,7 @@ struct MainView: View {
         }
     }
     .onAppear(perform: load)
+    .accentColor(.purple)
   }
 
   func load() {

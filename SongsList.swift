@@ -31,16 +31,18 @@ struct SongsList: View {
       ZStack {
         List {
           ForEach(sections.keys.sorted(), id: \.self) { char in
-            Section(header: Text(char)) {
+            Section(header: SectionHeader(char: char)) {
               ForEach(sections[char]!, id: \.self) { song in
                 SongRow(song: song)
               }
             }
             .id(char)
           }
-        }.listStyle(InsetGroupedListStyle())
+        }
+        .padding(.trailing, 14)
+        .listStyle(PlainListStyle())
 
-        // right - hand side selector
+        // right-hand side selector
         HStack {
           Spacer()
           VStack {
@@ -49,7 +51,10 @@ struct SongsList: View {
                 withAnimation {
                   proxy.scrollTo(char, anchor: .top)
                 }
-              }, label: { Text(char).font(.system(size: 10, weight: .bold, design: .rounded)) })
+              }, label: {
+                Text(char)
+                  .font(.system(size: 12, weight: .light, design: .rounded))
+              })
             }
           }
         }
@@ -76,5 +81,34 @@ struct SongRow: View {
         }
       }
     }
+  }
+}
+
+struct SectionHeader: View {
+  let char: String
+
+  var body: some View {
+    ZStack {
+      // duplicating below view
+      HStack {
+        Text(char)
+          .padding(.leading, 5)
+          .foregroundColor(.red)
+        Spacer()
+      }
+      .padding(5)
+      .background(Color.black)
+
+      HStack {
+        Text(char)
+          .padding(.leading, 5)
+          .foregroundColor(.purple)
+        Spacer()
+      }
+      .padding(5)
+      .background(Color(UIColor.systemGray6))
+      .cornerRadius(3, corners: [.topRight, .bottomRight])
+    }
+    .listRowInsets(EdgeInsets())
   }
 }
