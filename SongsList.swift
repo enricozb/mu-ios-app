@@ -32,7 +32,6 @@ struct SongsList: View {
             .id(char)
           }
         }
-        .padding(.trailing, 14)
         .listStyle(PlainListStyle())
 
         // right-hand side selector
@@ -82,27 +81,14 @@ struct SectionHeader: View {
   let char: String
 
   var body: some View {
-    ZStack {
-      // duplicating below view
-      HStack {
-        Text(char)
-          .padding(.leading, 5)
-          .foregroundColor(.red)
-        Spacer()
-      }
-      .padding(5)
-      .background(Color(UIColor.systemBackground))
-
-      HStack {
-        Text(char)
-          .padding(.leading, 5)
-          .foregroundColor(.purple)
-        Spacer()
-      }
-      .padding(5)
-      .background(Color(UIColor.systemGray6))
-      .cornerRadius(3, corners: [.topRight, .bottomRight])
+    HStack {
+      Text(char)
+        .padding(.leading, 5)
+        .foregroundColor(.purple)
+      Spacer()
     }
+    .padding(5)
+    .background(Color(UIColor.systemGray6))
     .listRowInsets(EdgeInsets())
   }
 }
