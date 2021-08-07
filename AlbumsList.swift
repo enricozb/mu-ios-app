@@ -61,20 +61,32 @@ struct AlbumsRow: View {
 }
 
 struct AlbumView: View {
+  @State var selected = false
   let album: Album
+
   var body: some View {
     if album.songs.count == 0 {
       Text("").frame(width: 150)
     } else {
       VStack {
-        Cover(album: album.id)
-          .frame(width: 150, height: 150)
-          .background(Color(UIColor.systemGray6))
-          .cornerRadius(7)
-          .overlay(
-            RoundedRectangle(cornerRadius: 7)
-              .stroke(Color(UIColor.lightGray), lineWidth: 0.3)
-          )
+        VStack {
+          NavigationLink(destination: Text(album.id), isActive: $selected) {
+            EmptyView()
+          }
+          .hidden()
+
+          Cover(album: album.id)
+            .frame(width: 150, height: 150)
+            .background(Color(UIColor.systemGray6))
+            .cornerRadius(7)
+            .overlay(
+              RoundedRectangle(cornerRadius: 7)
+                .stroke(Color(UIColor.lightGray), lineWidth: 0.3)
+            ).onTapGesture {
+              self.selected = true
+              log("touched: \(album.id)")
+            }
+        }
 
         VStack(alignment: .leading) {
           Text(album.id)
