@@ -45,7 +45,7 @@ struct SongsList: View {
         // right-hand side selector
         HStack {
           Spacer()
-          VStack {
+          VStack(spacing: 2) {
             ForEach(sections.keys.sorted(), id: \.self) { char in
               Button(action: {
                 withAnimation {
@@ -53,7 +53,7 @@ struct SongsList: View {
                 }
               }, label: {
                 Text(char)
-                  .font(.system(size: 12, weight: .light, design: .rounded))
+                  .font(.system(size: 11, weight: .medium, design: .rounded))
               })
             }
           }
