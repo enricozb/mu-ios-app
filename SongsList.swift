@@ -11,17 +11,10 @@ struct Song: Codable, Identifiable, Hashable {
 }
 
 struct SongsList: View {
-  var sections = [String: [Song]]()
+  let sections: [String: [Song]]
 
   init(songs: [Song]) {
-    for song in songs {
-      var char = "#"
-      if let first = song.title.first, first.isLetter {
-        char = first.uppercased()
-      }
-
-      sections[char] = sections[char] != nil ? sections[char]! + [song] : [song]
-    }
+    sections = alphabetBuckets(els: songs, key: \.title)
 
     UITableView.appearance().showsVerticalScrollIndicator = false
   }

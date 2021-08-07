@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MainView: View {
   @State var songs = [Song]()
+  @State var albums = [String: [Song]]()
 
   var body: some View {
     TabView {
@@ -14,12 +15,14 @@ struct MainView: View {
         Text("Songs")
       }
 
-      Text("Albums")
-        .font(.system(size: 30, weight: .bold, design: .rounded))
-        .tabItem {
-          Image(systemName: "square.stack")
-          Text("Albums")
-        }
+      NavigationView {
+        AlbumsList(albums: albums)
+          .navigationBarTitle("Albums")
+      }
+      .tabItem {
+        Image(systemName: "square.stack")
+        Text("Albums")
+      }
 
       Text("Artists")
         .font(.system(size: 30, weight: .bold, design: .rounded))
@@ -46,10 +49,11 @@ struct MainView: View {
         do {
           let songs = try JSONDecoder().decode([String: Song].self, from: data)
           DispatchQueue.main.async {
+            var songsFlat = [Song]()
             for (_, song) in songs {
-              self.songs.append(song)
+              songsFlat.append(song)
             }
-            self.songs.sort(by: { x, y in x.title < y.title })
+            self.songs = songsFlat
           }
         } catch {
           log("json error \(error.localizedDescription)")
