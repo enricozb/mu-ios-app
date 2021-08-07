@@ -16,6 +16,11 @@ struct SongsList: View {
   init(songs: [Song]) {
     sections = computeSections(els: songs, key: \.title)
 
+    // https://stackoverflow.com/a/62576641/6101419
+    let appearance = UINavigationBarAppearance()
+    appearance.shadowColor = .clear
+    UINavigationBar.appearance().standardAppearance = appearance
+
     UITableView.appearance().showsVerticalScrollIndicator = false
   }
 
