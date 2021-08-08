@@ -52,20 +52,26 @@ struct AlbumSongRow: View {
 
   var body: some View {
     HStack {
-      Text(song.track ?? "?")
+      Text(parseTrack(track: song.track))
         .foregroundColor(.gray)
-        .frame(width: 30)
+        .frame(width: 35)
       Text(song.title)
         .lineLimit(1)
     }
   }
 }
 
+func parseTrack(track: String?) -> String {
+  guard track != nil else { return "?" }
+  guard let trackInt = Int(track!) else { return track! }
+  return String(trackInt)
+}
+
 func albumSongOrder(song1: Song, song2: Song) -> Bool {
-  switch (song1.track, song2.track) {
-  case let (.some(p1), .some(p2)): return p1 < p2
-  case (.some(_), nil): return true
-  case (nil, .some(_)): return false
+  switch (Int(song1.track ?? ""), Int(song2.track ?? "")) {
   case (nil, nil): return song1.title < song2.title
+  case (_, nil): return true
+  case (nil, _): return false
+  case let (.some(track1), .some(track2)): return track1 < track2
   }
 }
