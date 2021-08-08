@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct MainView: View {
-  @State var albums = [Album]()
-  @State var songs = [Song]()
+  @State var albums = [String: [Album]]()
+  @State var songs = [String: [Song]]()
 
   var body: some View {
     TabView {
@@ -69,7 +69,7 @@ struct MainView: View {
       albums[song.album] = albums[song.album] != nil ? albums[song.album]! + [song] : [song]
     }
 
-    self.albums = albums.map { title, songs in Album(id: title, songs: songs) }
-    self.songs = songs
+    self.albums = computeSections(els: albums.map { title, songs in Album(id: title, songs: songs) }, key: \.id)
+    self.songs = computeSections(els: songs, key: \.title)
   }
 }

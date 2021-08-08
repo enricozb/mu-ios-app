@@ -13,8 +13,8 @@ struct Song: Codable, Identifiable, Hashable {
 struct SongsList: View {
   let sections: [String: [Song]]
 
-  init(songs: [Song]) {
-    sections = computeSections(els: songs, key: \.title)
+  init(songs: [String: [Song]]) {
+    sections = songs
 
     // https://stackoverflow.com/a/62576641/6101419
     let appearance = UINavigationBarAppearance()

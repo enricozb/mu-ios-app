@@ -6,14 +6,12 @@ struct Album: Hashable, Identifiable {
 }
 
 struct AlbumsList: View {
-  let albums: [Album]
   let sections: [String: [Album]]
 
-  init(albums: [Album]) {
-    self.albums = albums
-    sections = computeSections(els: albums, key: \.id)
-    UITableView.appearance().showsVerticalScrollIndicator = false
+  init(albums: [String: [Album]]) {
+    sections = albums
 
+    UITableView.appearance().showsVerticalScrollIndicator = false
     UITableView.appearance().separatorStyle = .none
   }
 
