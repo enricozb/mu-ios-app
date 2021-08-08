@@ -51,14 +51,14 @@ struct AlbumsRow: View {
 
   var body: some View {
     HStack(alignment: .center, spacing: 40) {
-      ForEach(albums) { album in AlbumView(album: album) }
+      ForEach(albums) { album in AlbumCover(album: album) }
     }
     .frame(maxWidth: .infinity)
     .padding(10)
   }
 }
 
-struct AlbumView: View {
+struct AlbumCover: View {
   @State var selected = false
   let album: Album
 
@@ -67,7 +67,10 @@ struct AlbumView: View {
       Text("").frame(width: 150)
     } else {
       VStack {
-        NavigationLink(destination: Text(album.id), isActive: $selected) { EmptyView() }
+        NavigationLink(
+          destination: AlbumDetail(album: album).navigationBarTitleDisplayMode(.inline),
+          isActive: $selected
+        ) { EmptyView() }
           .disabled(!selected)
           .hidden()
 
