@@ -44,7 +44,7 @@ struct AlbumDetail: View {
       .padding(10)
       List {
         ForEach(album.songs.sorted(by: albumSongOrder)) { song in
-          Button(action: { nowPlaying.play(song: song) }) {
+          Button(action: { nowPlaying.load(song: song) }) {
             AlbumSongRow(song: song)
           }
         }

@@ -1,4 +1,5 @@
 import AVFoundation
+import MediaPlayer
 import SwiftUI
 
 class NowPlaying: ObservableObject {
@@ -16,7 +17,20 @@ class NowPlaying: ObservableObject {
     }
   }
 
-  func play(song: Song) {
+  init() {
+    let commandCenter = MPRemoteCommandCenter.shared()
+    commandCenter.playCommand.addTarget { [unowned self] _ in
+      self.play()
+      return .success
+    }
+
+    commandCenter.pauseCommand.addTarget { [unowned self] _ in
+      self.pause()
+      return .success
+    }
+  }
+
+  func load(song: Song) {
     do {
       try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback)
       try AVAudioSession.sharedInstance().setActive(true)
@@ -32,12 +46,35 @@ class NowPlaying: ObservableObject {
 
     log("playing \(url)")
 
-    player = AVPlayer(playerItem: AVPlayerItem(url: url))
-
-    // play
-    isPlaying = true
-
+    player.replaceCurrentItem(with: AVPlayerItem(url: url))
     self.song = song
+    setupMediaInfo()
+    play()
+  }
+
+  func setupMediaInfo() {
+    MPNowPlayingInfoCenter.default().nowPlayingInfo = [
+      MPMediaItemPropertyTitle: song!.title,
+      MPMediaItemPropertyAlbumTitle: song!.album,
+      MPMediaItemPropertyArtist: song!.artist,
+    ]
+
+    let urlpart = song!.album.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
+
+    URLImage.cache.get(url: "http://192.168.2.147:4000/albums/\(urlpart)/cover") { image in
+      MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(
+        boundsSize: image.size,
+        requestHandler: { _ -> UIImage in image }
+      )
+    }
+  }
+
+  func play() {
+    isPlaying = true
+  }
+
+  func pause() {
+    isPlaying = false
   }
 }
 

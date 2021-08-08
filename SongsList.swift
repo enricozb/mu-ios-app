@@ -22,7 +22,7 @@ struct SongsList: View {
           ForEach(sections.keys.sorted(), id: \.self) { char in
             Section(header: SectionHeader(char: char)) {
               ForEach(sections[char]!.sorted(by: { $0.title.uppercased() < $1.title.uppercased() }), id: \.self) { song in
-                Button(action: { nowPlaying.play(song: song) }) {
+                Button(action: { nowPlaying.load(song: song) }) {
                   SongRow(song: song)
                 }
               }
