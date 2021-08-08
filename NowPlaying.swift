@@ -18,7 +18,7 @@ struct NowPlayingPadding: View {
   var body: some View {
     if nowPlaying.isPlaying {
       Section(header: Color(UIColor.systemBackground)
-        .frame(width: .infinity, height: 49).padding(0)) {
+        .frame(width: .infinity, height: MiniPlayer.Height).padding(0)) {
           EmptyView()
       }
       .listRowInsets(EdgeInsets())
@@ -27,22 +27,58 @@ struct NowPlayingPadding: View {
 }
 
 struct MiniPlayer: View {
+  static let Height: CGFloat = 70
+
   @EnvironmentObject var nowPlaying: NowPlaying
 
   var body: some View {
-    if nowPlaying.isPlaying {
+    if let song = nowPlaying.song {
       VStack(spacing: 0) {
         Spacer()
         Divider()
-        Text("playing something...")
-          .frame(maxWidth: .infinity)
-          .frame(height: 50)
-          .background(Blur(style: .systemChromeMaterial))
+        HStack {
+          SongRow(song: song)
+          Spacer()
+          MiniPlayerButtons()
+        }
+        .frame(height: MiniPlayer.Height)
+        .padding(.leading, 10)
+        .padding(.trailing, 10)
+        .background(Blur(style: .systemChromeMaterial))
         Divider()
       }
       .padding(.bottom, 48)
     } else {
       EmptyView()
+    }
+  }
+}
+
+struct MiniPlayerButtons: View {
+  var body: some View {
+    Button(action: { log("prev") }) {
+      Image(systemName: "backward.fill")
+        .imageScale(.large)
+        .padding(.top)
+        .padding(.bottom)
+        .padding(.leading, 5)
+        .padding(.trailing, 5)
+    }
+    Button(action: { log("play/pause") }) {
+      Image(systemName: "play.fill")
+        .imageScale(.large)
+        .padding(.top)
+        .padding(.bottom)
+        .padding(.leading, 5)
+        .padding(.trailing, 5)
+    }
+    Button(action: { log("next") }) {
+      Image(systemName: "forward.fill")
+        .imageScale(.large)
+        .padding(.top)
+        .padding(.bottom)
+        .padding(.leading, 5)
+        .padding(.trailing, 5)
     }
   }
 }

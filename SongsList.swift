@@ -33,7 +33,7 @@ struct SongsList: View {
         }
         .listStyle(PlainListStyle())
 
-        SlidePicker(letters:sections.keys.sorted(), scroller: proxy)
+        SlidePicker(letters: sections.keys.sorted(), scroller: proxy)
       }
     }
   }

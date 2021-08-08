@@ -34,9 +34,9 @@ struct MainView: View {
         }
     }
     .onAppear(perform: load)
-    .accentColor(.purple)
     .overlay(MiniPlayer())
     .environmentObject(nowPlaying)
+    .accentColor(.purple)
   }
 
   func load() {
