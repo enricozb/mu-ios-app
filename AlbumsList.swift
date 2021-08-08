@@ -16,25 +16,32 @@ struct AlbumsList: View {
   }
 
   var body: some View {
-    List {
-      ForEach(sections.keys.sorted(), id: \.self) { char in
-        Section(header: SectionHeader(char: char)) {
-          ForEach(
-            sections[char]!
-              .sorted(by: { $0.id < $1.id })
-              .chunked(by: 2), id: \.self
-          ) { albums in
-            // https://stackoverflow.com/a/62598818/6101419
-            VStack {
-              AlbumsRow(albums: albums)
+    ScrollViewReader { proxy in
+      ZStack {
+        List {
+          ForEach(sections.keys.sorted(), id: \.self) { char in
+            Section(header: SectionHeader(char: char)) {
+              ForEach(
+                sections[char]!
+                  .sorted(by: { $0.id < $1.id })
+                  .chunked(by: 2), id: \.self
+              ) { albums in
+                // https://stackoverflow.com/a/62598818/6101419
+                VStack {
+                  AlbumsRow(albums: albums)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+                .listRowInsets(EdgeInsets())
+                .background(Color(UIColor.systemBackground))
+              }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-            .listRowInsets(EdgeInsets())
-            .background(Color(UIColor.systemBackground))
           }
+          NowPlayingPadding()
         }
+
+        SlidePicker(letters: sections.keys.sorted(), scroller: proxy)
       }
-      NowPlayingPadding()
+      .listStyle(PlainListStyle())
     }
   }
 }
@@ -55,7 +62,8 @@ struct AlbumsRow: View {
       ForEach(albums) { album in AlbumCover(album: album) }
     }
     .frame(maxWidth: .infinity)
-    .padding(10)
+    .padding(.leading, 15)
+    .padding(.trailing, 15)
   }
 }
 

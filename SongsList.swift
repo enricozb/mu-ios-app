@@ -33,22 +33,7 @@ struct SongsList: View {
         }
         .listStyle(PlainListStyle())
 
-        // right-hand side selector
-        HStack {
-          Spacer()
-          VStack(spacing: 2) {
-            ForEach(sections.keys.sorted(), id: \.self) { char in
-              Button(action: {
-                withAnimation {
-                  proxy.scrollTo(char, anchor: .top)
-                }
-              }, label: {
-                Text(char)
-                  .font(.system(size: 11, weight: .medium, design: .rounded))
-              })
-            }
-          }
-        }
+        SlidePicker(letters:sections.keys.sorted(), scroller: proxy)
       }
     }
   }
