@@ -19,6 +19,8 @@ struct SlidePicker: View {
         ForEach(letters, id: \.self) { char in
           Letter(letter: char)
         }
+
+        NowPlayingPadding()
       }
       .frame(width: 15)
       .background(Color.red.opacity(0.0001))

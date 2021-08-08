@@ -1,13 +1,42 @@
+import AVFoundation
 import SwiftUI
 
 class NowPlaying: ObservableObject {
+  private var player = AVPlayer()
+
   @Published var song: Song?
 
-  var isPlaying: Bool {
-    return song != nil
+  @Published var isPlaying: Bool = false {
+    didSet {
+      if isPlaying {
+        player.play()
+      } else {
+        player.pause()
+      }
+    }
   }
 
   func play(song: Song) {
+    do {
+      try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback)
+      try AVAudioSession.sharedInstance().setActive(true)
+    } catch {
+      log("err: \(error)")
+    }
+
+    let urlpart = song.id.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
+    guard let url = URL(string: "http://192.168.2.147:4000/songs/\(urlpart)") else {
+      log("bad url?")
+      return
+    }
+
+    log("playing \(url)")
+
+    player = AVPlayer(playerItem: AVPlayerItem(url: url))
+
+    // play
+    isPlaying = true
+
     self.song = song
   }
 }
@@ -16,7 +45,7 @@ struct NowPlayingPadding: View {
   @EnvironmentObject var nowPlaying: NowPlaying
 
   var body: some View {
-    if nowPlaying.isPlaying {
+    if let _ = nowPlaying.song {
       Section(header: Color(UIColor.systemBackground)
         .frame(width: .infinity, height: MiniPlayer.Height).padding(0)) {
           EmptyView()
@@ -55,6 +84,8 @@ struct MiniPlayer: View {
 }
 
 struct MiniPlayerButtons: View {
+  @EnvironmentObject var nowPlaying: NowPlaying
+
   var body: some View {
     Button(action: { log("prev") }) {
       Image(systemName: "backward.fill")
@@ -64,14 +95,15 @@ struct MiniPlayerButtons: View {
         .padding(.leading, 5)
         .padding(.trailing, 5)
     }
-    Button(action: { log("play/pause") }) {
-      Image(systemName: "play.fill")
+    Button(action: { nowPlaying.isPlaying.toggle() }) {
+      Image(systemName: nowPlaying.isPlaying ? "pause.fill" : "play.fill")
         .imageScale(.large)
         .padding(.top)
         .padding(.bottom)
         .padding(.leading, 5)
         .padding(.trailing, 5)
     }
+    .frame(width: 20)
     Button(action: { log("next") }) {
       Image(systemName: "forward.fill")
         .imageScale(.large)
