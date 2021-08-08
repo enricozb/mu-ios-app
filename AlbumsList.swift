@@ -69,25 +69,18 @@ struct AlbumView: View {
       Text("").frame(width: 150)
     } else {
       VStack {
-        VStack {
-          NavigationLink(destination: Text(album.id), isActive: $selected) {
-            EmptyView()
-          }
+        NavigationLink(destination: Text(album.id), isActive: $selected) { EmptyView() }
+          .disabled(!selected)
           .hidden()
 
-          Cover(album: album.id)
-            .frame(width: 150, height: 150)
-            .background(Color(UIColor.systemGray6))
-            .cornerRadius(7)
-            .overlay(
-              RoundedRectangle(cornerRadius: 7)
-                .stroke(Color(UIColor.lightGray), lineWidth: 0.3)
-            )
-            .onTapGesture {
-              self.selected = true
-              log("touched: \(album.id)")
-            }
-        }
+        Cover(album: album.id)
+          .frame(width: 150, height: 150)
+          .background(Color(UIColor.systemGray6))
+          .cornerRadius(7)
+          .overlay(
+            RoundedRectangle(cornerRadius: 7)
+              .stroke(Color(UIColor.lightGray), lineWidth: 0.3)
+          )
 
         Text(album.id)
           .frame(width: 150, alignment: .leading)
@@ -98,6 +91,10 @@ struct AlbumView: View {
           .font(.caption)
           .lineLimit(1)
           .foregroundColor(.gray)
+      }
+      .onTapGesture {
+        self.selected = true
+        log("touched: \(album.id)")
       }
     }
   }
