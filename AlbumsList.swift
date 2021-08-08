@@ -34,6 +34,7 @@ struct AlbumsList: View {
           }
         }
       }
+      NowPlayingPadding()
     }
   }
 }

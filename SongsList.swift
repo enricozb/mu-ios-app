@@ -11,18 +11,9 @@ struct Song: Codable, Identifiable, Hashable {
 }
 
 struct SongsList: View {
+  @EnvironmentObject var nowPlaying: NowPlaying
+
   let sections: [String: [Song]]
-
-  init(songs: [String: [Song]]) {
-    sections = songs
-
-    // https://stackoverflow.com/a/62576641/6101419
-    let appearance = UINavigationBarAppearance()
-    appearance.shadowColor = .clear
-    UINavigationBar.appearance().standardAppearance = appearance
-
-    UITableView.appearance().showsVerticalScrollIndicator = false
-  }
 
   var body: some View {
     ScrollViewReader { proxy in
@@ -31,11 +22,14 @@ struct SongsList: View {
           ForEach(sections.keys.sorted(), id: \.self) { char in
             Section(header: SectionHeader(char: char)) {
               ForEach(sections[char]!.sorted(by: { $0.title < $1.title }), id: \.self) { song in
-                SongRow(song: song)
+                Button(action: { nowPlaying.play(song: song) }) {
+                  SongRow(song: song)
+                }
               }
             }
             .id(char)
           }
+          NowPlayingPadding()
         }
         .listStyle(PlainListStyle())
 

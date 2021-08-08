@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct AlbumDetail: View {
+  @EnvironmentObject var nowPlaying: NowPlaying
+
   let album: Album
 
   var body: some View {
@@ -40,8 +42,13 @@ struct AlbumDetail: View {
         Spacer()
       }
       .padding(10)
-      List(album.songs.sorted(by: albumSongOrder)) { song in
-        AlbumSongRow(song: song)
+      List {
+        ForEach(album.songs.sorted(by: albumSongOrder)) { song in
+          Button(action: { nowPlaying.play(song: song) }) {
+            AlbumSongRow(song: song)
+          }
+        }
+        NowPlayingPadding()
       }
     }
   }

@@ -10,12 +10,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     let contentView = MainView().environment(\.managedObjectContext, context)
 
-    let newAppearance = UINavigationBarAppearance()
-    newAppearance.configureWithOpaqueBackground()
-    newAppearance.backgroundColor = .black
-    newAppearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+    // https://stackoverflow.com/a/62576641/6101419
+    let appearance = UINavigationBarAppearance()
+    appearance.shadowColor = .clear
+    UINavigationBar.appearance().standardAppearance = appearance
 
-    UINavigationBar.appearance().standardAppearance = newAppearance
+    UITableView.appearance().showsVerticalScrollIndicator = false
 
     window = UIWindow(frame: UIScreen.main.bounds)
     window!.rootViewController = UIHostingController(rootView: contentView)
