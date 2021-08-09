@@ -33,29 +33,23 @@ struct MainView: View {
           Text("Artists")
         }
     }
-    .onAppear(perform: load)
     .overlay(MiniPlayer())
     .environmentObject(nowPlaying)
     .accentColor(.purple)
-  }
+    .onAppear {
+      api.songs { songs, error in
+        log("got song data")
 
-  func load() {
-    log("loading songs")
-
-    URLSession.shared.dataTask(with: URLRequest(url: URL(string: "http://192.168.2.147:4000/songs")!)) { data, _, error in
-      if let data = data {
-        do {
-          handleData(songs: try JSONDecoder().decode([String: Song].self, from: data))
-        } catch {
-          log("json error: \(error.localizedDescription)")
+        if let error = error {
+          log("api.songs", error: error)
+        } else if let songs = songs {
+          handleData(songs: songs)
         }
-      } else {
-        log("no data returned: \(error?.localizedDescription ?? "Unknown error")")
       }
-    }.resume()
+    }
   }
 
-  func handleData(songs byID: [String: Song]) {
+  func handleData(songs byID: API.SongData) {
     var songs = [Song]()
     var albums = [String: [Song]]()
 
@@ -66,17 +60,5 @@ struct MainView: View {
 
     self.albums = computeSections(els: albums.map { title, songs in Album(id: title, songs: songs) }, key: \.id)
     self.songs = computeSections(els: songs, key: \.title)
-  }
-}
-
-struct Blur: UIViewRepresentable {
-  var style: UIBlurEffect.Style = .systemMaterial
-
-  func makeUIView(context: Context) -> UIVisualEffectView {
-    return UIVisualEffectView(effect: UIBlurEffect(style: style))
-  }
-
-  func updateUIView(_ uiView: UIVisualEffectView, context: Context) {
-    uiView.effect = UIBlurEffect(style: style)
   }
 }

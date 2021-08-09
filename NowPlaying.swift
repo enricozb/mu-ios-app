@@ -6,25 +6,15 @@ class NowPlaying: ObservableObject {
   private var player = AVPlayer()
 
   @Published var song: Song?
-
-  @Published var isPlaying: Bool = false {
-    didSet {
-      if isPlaying {
-        player.play()
-      } else {
-        player.pause()
-      }
-    }
-  }
+  @Published private(set) var isPlaying: Bool = false
 
   init() {
-    let commandCenter = MPRemoteCommandCenter.shared()
-    commandCenter.playCommand.addTarget { [unowned self] _ in
+    MPRemoteCommandCenter.shared().playCommand.addTarget { _ in
       self.play()
       return .success
     }
 
-    commandCenter.pauseCommand.addTarget { [unowned self] _ in
+    MPRemoteCommandCenter.shared().pauseCommand.addTarget { _ in
       self.pause()
       return .success
     }
@@ -35,7 +25,7 @@ class NowPlaying: ObservableObject {
       try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback)
       try AVAudioSession.sharedInstance().setActive(true)
     } catch {
-      log("err: \(error)")
+      log("AVAudioSession.sharedInstance: \(error)")
     }
 
     let urlpart = song.id.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
@@ -60,7 +50,6 @@ class NowPlaying: ObservableObject {
     ]
 
     let urlpart = song!.album.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
-
     URLImage.cache.get(url: "http://192.168.2.147:4000/albums/\(urlpart)/cover") { image in
       MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(
         boundsSize: image.size,
@@ -70,11 +59,25 @@ class NowPlaying: ObservableObject {
   }
 
   func play() {
-    isPlaying = true
+    if !isPlaying {
+      player.play()
+      isPlaying = true
+    }
   }
 
   func pause() {
-    isPlaying = false
+    if isPlaying {
+      player.pause()
+      isPlaying = false
+    }
+  }
+
+  func toggle() {
+    if isPlaying {
+      pause()
+    } else {
+      play()
+    }
   }
 }
 
@@ -132,7 +135,7 @@ struct MiniPlayerButtons: View {
         .padding(.leading, 5)
         .padding(.trailing, 5)
     }
-    Button(action: { nowPlaying.isPlaying.toggle() }) {
+    Button(action: { nowPlaying.toggle() }) {
       Image(systemName: nowPlaying.isPlaying ? "pause.fill" : "play.fill")
         .imageScale(.large)
         .padding(.top)
