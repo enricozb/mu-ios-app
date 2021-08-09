@@ -16,8 +16,32 @@ class NowPlaying: ObservableObject {
 
     MPRemoteCommandCenter.shared().pauseCommand.addTarget { _ in
       self.pause()
+
+      let time = CMTimeGetSeconds(self.player.currentTime())
+      MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = time
+      log("setting time \(time)")
+
       return .success
     }
+
+    // MPRemoteCommandCenter.shared().changePlaybackPositionCommand.addTarget { event in
+    //   guard let event = event as? MPChangePlaybackPositionCommandEvent else { return .commandFailed }
+    //   self.player.seek(to: CMTime(seconds: event.positionTime, preferredTimescale: CMTimeScale(1000))) { success in
+    //     log("seek to: \(event.positionTime)")
+
+    //     DispatchQueue.main.async {
+    //       let time = CMTimeGetSeconds(self.player.currentTime())
+    //       MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = time
+    //       log("seek time to: \(time)")
+    //     }
+
+    //     if !success {
+    //       log("change playback failed")
+    //     }
+    //   }
+
+    //   return .success
+    // }
   }
 
   func load(song: Song) {
@@ -29,6 +53,7 @@ class NowPlaying: ObservableObject {
     }
 
     player.replaceCurrentItem(with: AVPlayerItem(url: api.url("/songs/\(song.id)")))
+
     self.song = song
     setupMediaInfo()
     play()
@@ -39,6 +64,7 @@ class NowPlaying: ObservableObject {
       MPMediaItemPropertyTitle: song!.title,
       MPMediaItemPropertyAlbumTitle: song!.album,
       MPMediaItemPropertyArtist: song!.artist,
+      MPMediaItemPropertyPlaybackDuration: Float(song!.duration)!,
     ]
 
     CoverImage.cache.get(album: song!.album) { image in
