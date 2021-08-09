@@ -16,8 +16,6 @@ struct API {
   let logEndpoint = URL(string: "http://192.168.2.147:5000")!
 
   func url(_ path: String, log: Bool = false) -> URL {
-    let path = path.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
-
     if log {
       return logEndpoint.appendingPathComponent(path)
     } else {
@@ -30,7 +28,7 @@ struct API {
   }
 
   func cover(album: String, then: @escaping (UIImage?, Error?) -> Void) {
-    get(url: url("/songs")) { data, _, error in
+    get(url: url("/albums/\(album)/cover")) { data, _, error in
       guard error == nil else {
         then(nil, error)
         return
@@ -71,6 +69,8 @@ struct API {
   }
 
   func post(url: URL, json: Any) {
+    // do not do `log` inside this function, as `log` calls `post`
+
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -85,8 +85,7 @@ struct API {
   }
 
   func get(url: URL, action: @escaping (Data?, URLResponse?, Error?) -> Void) {
-    URLSession.shared.dataTask(with: URLRequest(url: URL(string: "http://192.168.2.147:4000/songs")!),
-                               completionHandler: action).resume()
+    URLSession.shared.dataTask(with: URLRequest(url: url), completionHandler: action).resume()
   }
 }
 

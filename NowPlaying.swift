@@ -49,8 +49,7 @@ class NowPlaying: ObservableObject {
       MPMediaItemPropertyArtist: song!.artist,
     ]
 
-    let urlpart = song!.album.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
-    URLImage.cache.get(url: "http://192.168.2.147:4000/albums/\(urlpart)/cover") { image in
+    CoverImage.cache.get(album: song!.album) { image in
       MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(
         boundsSize: image.size,
         requestHandler: { _ -> UIImage in image }
