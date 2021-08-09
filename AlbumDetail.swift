@@ -43,9 +43,12 @@ struct AlbumDetail: View {
       }
       .padding(10)
       List {
-        ForEach(album.songs.sorted(by: albumSongOrder)) { song in
-          Button(action: { nowPlaying.load(song: song) }) {
-            AlbumSongRow(song: song)
+        ForEach(album.songs.indices) { i in
+          Button(action: {
+            nowPlaying.load(song: album.songs[i])
+            nowPlaying.enqueue(songs: album.songs[(i + 1)...])
+          }) {
+            AlbumSongRow(song: album.songs[i])
           }
         }
         NowPlayingPadding()

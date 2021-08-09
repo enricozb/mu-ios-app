@@ -6,6 +6,8 @@ class NowPlaying: ObservableObject {
   private var player = AVPlayer()
 
   @Published var song: Song?
+  @Published var queue = [Song]()
+
   @Published private(set) var isPlaying: Bool = false
 
   init() {
@@ -17,10 +19,16 @@ class NowPlaying: ObservableObject {
     MPRemoteCommandCenter.shared().pauseCommand.addTarget { _ in
       self.pause()
 
+      // setting this because the scrubber goes to 0 on pause for some reason
       let time = CMTimeGetSeconds(self.player.currentTime())
       MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = time
       log("setting time \(time)")
 
+      return .success
+    }
+
+    MPRemoteCommandCenter.shared().nextTrackCommand.addTarget { _ in
+      self.next()
       return .success
     }
 
@@ -45,6 +53,8 @@ class NowPlaying: ObservableObject {
   }
 
   func load(song: Song) {
+    cleanupCurrentItem()
+
     do {
       try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback)
       try AVAudioSession.sharedInstance().setActive(true)
@@ -54,9 +64,20 @@ class NowPlaying: ObservableObject {
 
     player.replaceCurrentItem(with: AVPlayerItem(url: api.url("/songs/\(song.id)")))
 
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(NowPlaying.didFinishPlaying(_:)),
+      name: .AVPlayerItemDidPlayToEndTime,
+      object: player.currentItem
+    )
+
     self.song = song
     setupMediaInfo()
     play()
+  }
+
+  @objc func didFinishPlaying(_ notification: NSNotification) {
+    next()
   }
 
   func setupMediaInfo() {
@@ -73,6 +94,18 @@ class NowPlaying: ObservableObject {
         requestHandler: { _ -> UIImage in image }
       )
     }
+  }
+
+  func clearMediaInfo() {
+    MPNowPlayingInfoCenter.default().nowPlayingInfo = [String: Any]()
+  }
+
+  func cleanupCurrentItem() {
+    NotificationCenter.default.removeObserver(
+      self,
+      name: .AVPlayerItemDidPlayToEndTime,
+      object: player.currentItem
+    )
   }
 
   func play() {
@@ -95,6 +128,23 @@ class NowPlaying: ObservableObject {
     } else {
       play()
     }
+  }
+
+  func next() {
+    pause()
+    cleanupCurrentItem()
+
+    guard queue.count > 0 else {
+      song = nil
+      clearMediaInfo()
+      return
+    }
+
+    load(song: queue.removeFirst())
+  }
+
+  func enqueue(songs: ArraySlice<Song>) {
+    queue += songs
   }
 }
 
@@ -161,7 +211,7 @@ struct MiniPlayerButtons: View {
         .padding(.trailing, 5)
     }
     .frame(width: 20)
-    Button(action: { log("next") }) {
+    Button(action: { nowPlaying.next() }) {
       Image(systemName: "forward.fill")
         .imageScale(.large)
         .padding(.top)

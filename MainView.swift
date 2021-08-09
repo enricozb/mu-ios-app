@@ -58,7 +58,7 @@ struct MainView: View {
       albums[song.album] = albums[song.album] != nil ? albums[song.album]! + [song] : [song]
     }
 
-    self.albums = computeSections(els: albums.map { title, songs in Album(id: title, songs: songs) }, key: \.id)
+    self.albums = computeSections(els: albums.map { title, songs in Album(id: title, songs: songs.sorted(by: albumSongOrder)) }, key: \.id)
     self.songs = computeSections(els: songs, key: \.title)
   }
 }
