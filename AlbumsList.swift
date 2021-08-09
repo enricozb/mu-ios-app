@@ -21,18 +21,13 @@ struct AlbumsList: View {
         List {
           ForEach(sections.keys.sorted(), id: \.self) { char in
             Section(header: SectionHeader(char: char)) {
-              ForEach(
-                sections[char]!
-                  .sorted(by: { $0.id < $1.id })
-                  .chunked(by: 2), id: \.self
-              ) { albums in
+              ForEach(sections[char]!.chunked(by: 2), id: \.self) { albums in
                 // https://stackoverflow.com/a/62598818/6101419
-                VStack {
-                  AlbumsRow(albums: albums)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-                .listRowInsets(EdgeInsets())
-                .background(Color(UIColor.systemBackground))
+                AlbumsRow(albums: albums)
+                  .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+                  .padding(.bottom, 10)
+                  .listRowInsets(EdgeInsets())
+                  .background(Color(UIColor.systemBackground))
               }
             }
           }

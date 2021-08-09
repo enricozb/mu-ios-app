@@ -5,7 +5,7 @@ func computeSections(els: [String]) -> [String: [String]] {
 }
 
 func computeSections<E>(els: [E], key: (E) -> String) -> [String: [E]] {
-  var buckets = [String: [E]]()
+  var sections = [String: [E]]()
 
   for el in els {
     var char = "#"
@@ -13,10 +13,14 @@ func computeSections<E>(els: [E], key: (E) -> String) -> [String: [E]] {
       char = first.uppercased()
     }
 
-    buckets[char] = buckets[char] != nil ? buckets[char]! + [el] : [el]
+    sections[char] = sections[char] != nil ? sections[char]! + [el] : [el]
   }
 
-  return buckets
+  for char in sections.keys {
+    sections[char]!.sort { key($0).uppercased() < key($1).uppercased() }
+  }
+
+  return sections
 }
 
 func log(_ msg: String) {
