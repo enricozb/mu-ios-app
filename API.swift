@@ -35,12 +35,12 @@ struct API {
       }
 
       guard let data = data else {
-        then(nil, APIError(message: "no image data returned"))
+        then(nil, APIError(message: "no image data returned: \(album)"))
         return
       }
 
       guard let image = UIImage(data: data) else {
-        then(nil, APIError(message: "invalid image data"))
+        then(nil, APIError(message: "invalid image data: \(album)"))
         return
       }
 

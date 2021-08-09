@@ -28,15 +28,7 @@ class NowPlaying: ObservableObject {
       log("AVAudioSession.sharedInstance: \(error)")
     }
 
-    let urlpart = song.id.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
-    guard let url = URL(string: "http://192.168.2.147:4000/songs/\(urlpart)") else {
-      log("bad url?")
-      return
-    }
-
-    log("playing \(url)")
-
-    player.replaceCurrentItem(with: AVPlayerItem(url: url))
+    player.replaceCurrentItem(with: AVPlayerItem(url: api.url("/songs/\(song.id)")))
     self.song = song
     setupMediaInfo()
     play()
