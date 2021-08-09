@@ -166,6 +166,7 @@ struct MiniPlayer: View {
   static let Height: CGFloat = 70
 
   @EnvironmentObject var nowPlaying: NowPlaying
+  @State private var showingSheet = false
 
   var body: some View {
     if let song = nowPlaying.song {
@@ -184,6 +185,12 @@ struct MiniPlayer: View {
         Divider()
       }
       .padding(.bottom, 48)
+      .onTapGesture {
+        showingSheet.toggle()
+      }.sheet(isPresented: $showingSheet) {
+        NowPlayingDetail()
+          .accentColor(.purple)
+      }
     } else {
       EmptyView()
     }

@@ -1,3 +1,4 @@
+import AVFoundation
 import SwiftUI
 
 // https://stackoverflow.com/a/58606176/6101419
@@ -36,5 +37,16 @@ struct Blur: UIViewRepresentable {
 
   func updateUIView(_ uiView: UIVisualEffectView, context: Context) {
     uiView.effect = UIBlurEffect(style: style)
+  }
+}
+
+// https://stackoverflow.com/a/48281081/6101419
+extension AVPlayer {
+  func progressObserver(action: @escaping ((Double) -> Void)) -> Any {
+    return addPeriodicTimeObserver(forInterval: CMTime(value: 1, timescale: 1), queue: .main, using: { _ in
+      if let item = self.currentItem {
+        action(CMTimeGetSeconds(item.currentTime()))
+      }
+    })
   }
 }
