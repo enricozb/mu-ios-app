@@ -12,13 +12,22 @@ class NowPlaying: ObservableObject {
 
   init() {
     MPRemoteCommandCenter.shared().playCommand.addTarget { _ in
+      // setting this because the scrubber goes to 0 on pause for some reason
+      let time = CMTimeGetSeconds(self.player.currentTime())
+      MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = time
+      log("setting time \(time)")
+
       self.play()
+
+      MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = self.player.rate
+
       return .success
     }
 
     MPRemoteCommandCenter.shared().pauseCommand.addTarget { _ in
       self.pause()
 
+      MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = self.player.rate
       // setting this because the scrubber goes to 0 on pause for some reason
       let time = CMTimeGetSeconds(self.player.currentTime())
       MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = time
@@ -86,6 +95,7 @@ class NowPlaying: ObservableObject {
       MPMediaItemPropertyAlbumTitle: song!.album,
       MPMediaItemPropertyArtist: song!.artist,
       MPMediaItemPropertyPlaybackDuration: Float(song!.duration)!,
+      MPNowPlayingInfoPropertyPlaybackRate: 1,
     ]
 
     CoverImage.cache.get(album: song!.album) { image in
@@ -109,17 +119,13 @@ class NowPlaying: ObservableObject {
   }
 
   func play() {
-    if !isPlaying {
-      player.play()
-      isPlaying = true
-    }
+    player.play()
+    isPlaying = true
   }
 
   func pause() {
-    if isPlaying {
-      player.pause()
-      isPlaying = false
-    }
+    player.pause()
+    isPlaying = false
   }
 
   func toggle() {
