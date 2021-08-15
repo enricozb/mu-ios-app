@@ -51,7 +51,7 @@ struct AlbumDetail: View {
             AlbumSongRow(song: album.songs[i])
           }
         }
-        NowPlayingPadding()
+        MiniPlayerPadding()
       }
     }
   }

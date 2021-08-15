@@ -12,27 +12,12 @@ class NowPlaying: ObservableObject {
 
   init() {
     MPRemoteCommandCenter.shared().playCommand.addTarget { _ in
-      // setting this because the scrubber goes to 0 on pause for some reason
-      let time = CMTimeGetSeconds(self.player.currentTime())
-      MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = time
-      log("setting time \(time)")
-
       self.play()
-
-      MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = self.player.rate
-
       return .success
     }
 
     MPRemoteCommandCenter.shared().pauseCommand.addTarget { _ in
       self.pause()
-
-      MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = self.player.rate
-      // setting this because the scrubber goes to 0 on pause for some reason
-      let time = CMTimeGetSeconds(self.player.currentTime())
-      MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = time
-      log("setting time \(time)")
-
       return .success
     }
 
@@ -95,7 +80,7 @@ class NowPlaying: ObservableObject {
       MPMediaItemPropertyAlbumTitle: song!.album,
       MPMediaItemPropertyArtist: song!.artist,
       MPMediaItemPropertyPlaybackDuration: Float(song!.duration)!,
-      MPNowPlayingInfoPropertyPlaybackRate: 1,
+      MPNowPlayingInfoPropertyPlaybackRate: 0,
     ]
 
     CoverImage.cache.get(album: song!.album) { image in
@@ -104,6 +89,11 @@ class NowPlaying: ObservableObject {
         requestHandler: { _ -> UIImage in image }
       )
     }
+  }
+
+  func setMPRemoteTimeAndRate() {
+    MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = CMTimeGetSeconds(player.currentTime())
+    MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = player.rate
   }
 
   func clearMediaInfo() {
@@ -120,11 +110,13 @@ class NowPlaying: ObservableObject {
 
   func play() {
     player.play()
+    setMPRemoteTimeAndRate()
     isPlaying = true
   }
 
   func pause() {
     player.pause()
+    setMPRemoteTimeAndRate()
     isPlaying = false
   }
 
@@ -151,86 +143,5 @@ class NowPlaying: ObservableObject {
 
   func enqueue(songs: ArraySlice<Song>) {
     queue += songs
-  }
-}
-
-struct NowPlayingPadding: View {
-  @EnvironmentObject var nowPlaying: NowPlaying
-
-  var body: some View {
-    if let _ = nowPlaying.song {
-      Section(header: Color(UIColor.systemBackground)
-        .frame(width: .infinity, height: MiniPlayer.Height).padding(0)) {
-          EmptyView()
-      }
-      .listRowInsets(EdgeInsets())
-    }
-  }
-}
-
-struct MiniPlayer: View {
-  static let Height: CGFloat = 70
-
-  @EnvironmentObject var nowPlaying: NowPlaying
-  @State private var showingSheet = false
-
-  var body: some View {
-    if let song = nowPlaying.song {
-      VStack(spacing: 0) {
-        Spacer()
-        Divider()
-        HStack {
-          SongRow(song: song)
-          Spacer()
-          MiniPlayerButtons()
-        }
-        .frame(height: MiniPlayer.Height)
-        .padding(.leading, 10)
-        .padding(.trailing, 10)
-        .background(Blur(style: .systemChromeMaterial))
-        Divider()
-      }
-      .padding(.bottom, 48)
-      .onTapGesture {
-        showingSheet.toggle()
-      }.sheet(isPresented: $showingSheet) {
-        NowPlayingDetail()
-          .accentColor(.purple)
-      }
-    } else {
-      EmptyView()
-    }
-  }
-}
-
-struct MiniPlayerButtons: View {
-  @EnvironmentObject var nowPlaying: NowPlaying
-
-  var body: some View {
-    Button(action: { log("prev") }) {
-      Image(systemName: "backward.fill")
-        .imageScale(.large)
-        .padding(.top)
-        .padding(.bottom)
-        .padding(.leading, 5)
-        .padding(.trailing, 5)
-    }
-    Button(action: { nowPlaying.toggle() }) {
-      Image(systemName: nowPlaying.isPlaying ? "pause.fill" : "play.fill")
-        .imageScale(.large)
-        .padding(.top)
-        .padding(.bottom)
-        .padding(.leading, 5)
-        .padding(.trailing, 5)
-    }
-    .frame(width: 20)
-    Button(action: { nowPlaying.next() }) {
-      Image(systemName: "forward.fill")
-        .imageScale(.large)
-        .padding(.top)
-        .padding(.bottom)
-        .padding(.leading, 5)
-        .padding(.trailing, 5)
-    }
   }
 }

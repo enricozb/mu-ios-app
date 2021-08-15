@@ -29,7 +29,7 @@ struct SongsList: View {
             }
             .id(char)
           }
-          NowPlayingPadding()
+          MiniPlayerPadding()
         }
         .listStyle(PlainListStyle())
 

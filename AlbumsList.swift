@@ -31,7 +31,7 @@ struct AlbumsList: View {
               }
             }
           }
-          NowPlayingPadding()
+          MiniPlayerPadding()
         }
 
         SlidePicker(letters: sections.keys.sorted(), scroller: proxy)

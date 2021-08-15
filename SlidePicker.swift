@@ -20,7 +20,7 @@ struct SlidePicker: View {
           Letter(letter: char)
         }
 
-        NowPlayingPadding()
+        MiniPlayerPadding()
       }
       .frame(width: 15)
       .background(Color.red.opacity(0.0001))
