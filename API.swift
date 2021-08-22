@@ -13,7 +13,7 @@ struct API {
   typealias SongData = [String: Song]
 
   let endpoint = URL(string: "http://me.ezb.io:1321")!
-  let logEndpoint = URL(string: "http://192.168.2.147:5000")!
+  let logEndpoint = URL(string: "http://192.168.1.172:5000")!
 
   func url(_ path: String, log: Bool = false) -> URL {
     if log {
