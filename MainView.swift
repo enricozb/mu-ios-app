@@ -33,7 +33,7 @@ struct MainView: View {
           Text("Artists")
         }
     }
-    .overlay(MiniPlayer())
+    .overlay(GeometryReader { g in MiniPlayer(maxWidth: g.size.width, maxHeight: g.size.height) })
     .environmentObject(nowPlaying)
     .accentColor(.purple)
     .onAppear {
