@@ -16,7 +16,7 @@ struct MiniPlayerPadding: View {
 
 struct MiniPlayerNarrowInfo: View {
   static let MinAlbumSize: Double = 50
-  static let MaxAlbumSize: Double = 250
+  static let MaxAlbumSize: Double = 300
 
   let width: CGFloat
   let song: Song
@@ -47,6 +47,37 @@ struct MiniPlayerNarrowInfo: View {
   var trailingPadding: CGFloat { CGFloat(interp(start: 10, end: -250, t: lerp)) }
 }
 
+struct MiniPlayerWideInfo: View {
+  let width: CGFloat
+  let song: Song
+  let lerp: Double
+
+  var body: some View {
+    VStack {
+      ProgressView(value: 0.3)
+      HStack {
+        Text("0:35").font(.caption)
+        Spacer()
+        Text("-3:07").font(.caption)
+      }
+      SongTitleAndAlbum(song: song, alignment: .center)
+
+      HStack {
+        MiniPlayerButtons()
+      }
+      .frame(maxWidth: .infinity)
+      .border(Color.red)
+    }
+    .padding(.top, 20)
+    .padding(.bottom, CGFloat(interp(start: -140, end: 10, t: lerp)))
+    .padding(.leading, progressPadding)
+    .padding(.trailing, progressPadding)
+    .opacity(2 * lerp - 1)
+  }
+
+  var progressPadding: CGFloat { (width - CGFloat(MiniPlayerNarrowInfo.MaxAlbumSize)) / 2 }
+}
+
 struct MiniPlayer: View {
   static let MinHeight: CGFloat = 70
 
@@ -67,17 +98,13 @@ struct MiniPlayer: View {
         Spacer()
         Divider()
 
-        VStack {
+        VStack(spacing: 0) {
           MiniPlayerNarrowInfo(width: maxWidth, song: song, lerp: lerp)
-
-          // SongTitleAndAlbum(song: song, alignment: .center)
-          //   .frame(maxHeight: 0)
-          //   .fixedSize(horizontal: false, vertical: true)
-          //   .scaleEffect(CGFloat(lerp))
-          //   .opacity(0)
+          MiniPlayerWideInfo(width: maxWidth, song: song, lerp: lerp)
         }
         .frame(maxHeight: height)
         .background(Blur(style: .systemChromeMaterial))
+        .mask(Rectangle().frame(height: height, alignment: .bottom))
 
         Divider()
       }
