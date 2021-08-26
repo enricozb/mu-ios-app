@@ -1,4 +1,5 @@
 import AVFoundation
+import MediaPlayer
 import SwiftUI
 
 // https://stackoverflow.com/a/58606176/6101419
@@ -52,8 +53,17 @@ extension AVPlayer {
 }
 
 // https://stackoverflow.com/a/62044583
-func clamped<T>(x: T, min: T, max: T) -> T where T: Comparable{
+func clamped<T>(x: T, min: T, max: T) -> T where T: Comparable {
   if x < min { return min }
   if x > max { return max }
   return x
+}
+
+// https://muhammedtanriverdi.medium.com/swiftui-volume-slider-3fee7b238015
+struct VolumeSlider: UIViewRepresentable {
+  func makeUIView(context: Context) -> MPVolumeView {
+    MPVolumeView(frame: .zero)
+  }
+
+  func updateUIView(_ view: MPVolumeView, context: Context) {}
 }

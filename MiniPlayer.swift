@@ -31,8 +31,8 @@ struct MiniPlayerNarrowInfo: View {
         .opacity(nonCoverOpacity)
 
       Spacer()
-      MiniPlayerButtons()
-        .opacity(nonCoverOpacity)
+      MiniPlayerButtonPlayPause().opacity(nonCoverOpacity)
+      MiniPlayerButtonNext().opacity(nonCoverOpacity)
     }
     .padding(.leading, leadingPadding)
     .padding(.trailing, trailingPadding)
@@ -54,22 +54,27 @@ struct MiniPlayerWideInfo: View {
 
   var body: some View {
     VStack {
+      // TODO(enricozb): hydrate these values
       ProgressView(value: 0.3)
       HStack {
         Text("0:35").font(.caption)
         Spacer()
         Text("-3:07").font(.caption)
       }
+
       SongTitleAndAlbum(song: song, alignment: .center)
 
-      HStack {
-        MiniPlayerButtons()
+      HStack(spacing: 50) {
+        MiniPlayerButtonPrev()
+        MiniPlayerButtonPlayPause(size: 32)
+        MiniPlayerButtonNext()
       }
       .frame(maxWidth: .infinity)
-      .border(Color.red)
+
+      VolumeSlider().frame(height: 40)
     }
     .padding(.top, 20)
-    .padding(.bottom, CGFloat(interp(start: -140, end: 10, t: lerp)))
+    .padding(.bottom, CGFloat(interp(start: -200, end: 10, t: lerp)))
     .padding(.leading, progressPadding)
     .padding(.trailing, progressPadding)
     .opacity(2 * lerp - 1)
@@ -138,38 +143,6 @@ struct MiniPlayer: View {
   // --- interpolated values ---
 
   var bottomPadding: CGFloat { CGFloat(interp(start: 48, end: 0, t: Double(lerp))) }
-}
-
-struct MiniPlayerButtons: View {
-  @EnvironmentObject var nowPlaying: NowPlaying
-
-  var body: some View {
-    Button(action: { log("prev") }) {
-      Image(systemName: "backward.fill")
-        .imageScale(.large)
-        .padding(.top)
-        .padding(.bottom)
-        .padding(.leading, 5)
-        .padding(.trailing, 5)
-    }
-    Button(action: { nowPlaying.toggle() }) {
-      Image(systemName: nowPlaying.isPlaying ? "pause.fill" : "play.fill")
-        .imageScale(.large)
-        .padding(.top)
-        .padding(.bottom)
-        .padding(.leading, 5)
-        .padding(.trailing, 5)
-    }
-    .frame(width: 20)
-    Button(action: { nowPlaying.next() }) {
-      Image(systemName: "forward.fill")
-        .imageScale(.large)
-        .padding(.top)
-        .padding(.bottom)
-        .padding(.leading, 5)
-        .padding(.trailing, 5)
-    }
-  }
 }
 
 struct SongTitleAndAlbum: View {
