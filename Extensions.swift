@@ -50,3 +50,10 @@ extension AVPlayer {
     })
   }
 }
+
+// https://stackoverflow.com/a/62044583
+func clamped<T>(x: T, min: T, max: T) -> T where T: Comparable{
+  if x < min { return min }
+  if x > max { return max }
+  return x
+}

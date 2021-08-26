@@ -30,3 +30,8 @@ func log(_ msg: String) {
 func log(_ msg: String, error: Error?) {
   log("\(msg): \(error?.localizedDescription ?? "Unknown error")")
 }
+
+// linearly interpolates between start and end where t in [0, 1]
+func interp(start: Double, end: Double, t: Double) -> Double {
+  return start + t * (end - start)
+}

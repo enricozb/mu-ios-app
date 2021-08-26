@@ -38,7 +38,7 @@ struct MiniPlayerNarrowInfo: View {
     .padding(.trailing, trailingPadding)
   }
 
-  // --- linearly interpolated values ---
+  // --- interpolated values ---
 
   var albumSize: CGFloat { CGFloat(interp(start: MiniPlayerNarrowInfo.MinAlbumSize, end: MiniPlayerNarrowInfo.MaxAlbumSize, t: lerp)) }
   var albumCornerRadius: CGFloat { CGFloat(interp(start: 3, end: 5, t: lerp)) }
@@ -55,8 +55,11 @@ struct MiniPlayer: View {
 
   @EnvironmentObject var nowPlaying: NowPlaying
 
-  @State private var height: CGFloat = MiniPlayer.MinHeight
+  // maximized represents whether or not the miniplayer view is maximized
   @State private var maximized = false
+
+  // drag represents the current drag of a gesture in number of pixels. Positive numbers represent dragging downward
+  @State private var drag: CGFloat? = nil
 
   var body: some View {
     if let song = nowPlaying.song {
@@ -79,45 +82,35 @@ struct MiniPlayer: View {
         Divider()
       }
       .padding(.bottom, bottomPadding)
-      .gesture(drag)
-      .onTapGesture {
-        withAnimation {
-          self.height = maxHeight
-          self.maximized = true
-        }
-      }
+      .gesture(tapDragGesture)
     } else {
       EmptyView()
     }
   }
 
-  var bottomPadding: CGFloat { CGFloat(interp(start: 48, end: 0, t: Double(lerp))) }
   var snapHeight: CGFloat { maximized ? maxHeight : MiniPlayer.MinHeight }
-  var lerp: Double { Double(min(maxHeight * 0.8, height - MiniPlayer.MinHeight) / (maxHeight * 0.8)) }
+  var height: CGFloat { clamped(x: snapHeight - (drag ?? 0), min: MiniPlayer.MinHeight, max: maxHeight) }
+  var lerp: Double { Double((height - MiniPlayer.MinHeight) / (maxHeight - MiniPlayer.MinHeight)) }
 
-  var drag: some Gesture {
-    DragGesture()
-      .onChanged { drag in
-        if maximized {
-          self.height = maxHeight + min(-drag.translation.height, 0)
-        } else {
-          self.height = MiniPlayer.MinHeight + max(-drag.translation.height, 0)
-        }
-      }
-      .onEnded { drag in
-        if drag.translation.height < 0 {
-          withAnimation {
-            self.height = maxHeight
-            self.maximized = true
-          }
-        } else {
-          withAnimation {
-            self.height = MiniPlayer.MinHeight
-            self.maximized = false
-          }
-        }
-      }
+  var tapDragGesture: some Gesture {
+    return SimultaneousGesture(
+      DragGesture()
+        .onChanged { gesture in self.drag = gesture.translation.height }
+        .onEnded { gesture in withAnimation {
+          self.maximized = gesture.translation.height < 0
+          self.drag = nil
+        }},
+
+      TapGesture(count: 1)
+        .onEnded { _ in withAnimation {
+          self.maximized = true
+        }}
+    )
   }
+
+  // --- interpolated values ---
+
+  var bottomPadding: CGFloat { CGFloat(interp(start: 48, end: 0, t: Double(lerp))) }
 }
 
 struct MiniPlayerButtons: View {
@@ -166,9 +159,4 @@ struct SongTitleAndAlbum: View {
         .lineLimit(1)
     }
   }
-}
-
-// linearly interpolates between start and end where t in [0, 1]
-func interp(start: Double, end: Double, t: Double) -> Double {
-  return start + t * (end - start)
 }
