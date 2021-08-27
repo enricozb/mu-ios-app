@@ -19,25 +19,25 @@ struct MiniPlayerButton: View {
 }
 
 struct MiniPlayerButtonPrev: View {
-  @EnvironmentObject var nowPlaying: NowPlaying
+  @EnvironmentObject var player: Player
   var body: some View {
     MiniPlayerButton(systemName: "backward.fill") { log("prev") }
   }
 }
 
 struct MiniPlayerButtonPlayPause: View {
-  @EnvironmentObject var nowPlaying: NowPlaying
+  @EnvironmentObject var player: Player
 
   var size: CGFloat = 20
 
   var body: some View {
-    MiniPlayerButton(size: size, systemName: nowPlaying.isPlaying ? "pause.fill" : "play.fill") { nowPlaying.toggle() }
+    MiniPlayerButton(size: size, systemName: player.isPlaying ? "pause.fill" : "play.fill") { player.toggle() }
   }
 }
 
 struct MiniPlayerButtonNext: View {
-  @EnvironmentObject var nowPlaying: NowPlaying
+  @EnvironmentObject var player: Player
   var body: some View {
-    MiniPlayerButton(systemName: "forward.fill") { nowPlaying.next() }
+    MiniPlayerButton(systemName: "forward.fill") { player.next() }
   }
 }

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct MainView: View {
-  @StateObject var nowPlaying = NowPlaying()
+  @StateObject var player = Player()
 
   @State var albums = [String: [Album]]()
   @State var songs = [String: [Song]]()
@@ -33,8 +33,12 @@ struct MainView: View {
           Text("Artists")
         }
     }
-    .overlay(GeometryReader { g in MiniPlayer(maxWidth: g.size.width, maxHeight: g.size.height) })
-    .environmentObject(nowPlaying)
+    .overlay(GeometryReader { g in
+      if let song = player.song {
+        MiniPlayer(song: song, maxWidth: g.size.width, maxHeight: g.size.height)
+      }
+    })
+    .environmentObject(player)
     .accentColor(.purple)
     .onAppear {
       api.songs { songs, error in

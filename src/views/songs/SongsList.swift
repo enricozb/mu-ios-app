@@ -11,7 +11,7 @@ struct Song: Codable, Identifiable, Hashable {
 }
 
 struct SongsList: View {
-  @EnvironmentObject var nowPlaying: NowPlaying
+  @EnvironmentObject var player: Player
 
   let sections: [String: [Song]]
 
@@ -22,7 +22,7 @@ struct SongsList: View {
           ForEach(sections.keys.sorted(), id: \.self) { char in
             Section(header: SectionHeader(char: char)) {
               ForEach(sections[char]!, id: \.self) { song in
-                Button(action: { nowPlaying.load(song: song) }) {
+                Button(action: { player.playQueue(songs: [song]) }) {
                   SongRow(song: song)
                 }
               }

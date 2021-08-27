@@ -2,6 +2,98 @@ import AVFoundation
 import MediaPlayer
 import SwiftUI
 
+class Player: ObservableObject, AudioPlayerDelegate {
+  private var player = AudioPlayer()
+
+  @Published var song: Song?
+  @Published var isPlaying: Bool = false
+
+  // prev and next are the previous and upcoming songs in the queue
+  @Published var prevs: Deque<Song> = []
+  @Published var nexts: Deque<Song> = []
+
+  init() {
+    player.delegate = self
+  }
+
+  func playQueue<C>(songs: C) where C: Collection, C.Element == Song {
+    player.stop()
+    prevs.removeAll()
+    song = nil
+    nexts = Deque(songs)
+    next()
+  }
+
+  func next() {
+    player.stop()
+    if let song = song { prevs.append(song) }
+    if nexts.count > 0 { song = nexts.popFirst() }
+    play()
+  }
+
+  func prev() {
+    player.stop()
+    if let song = song { nexts.append(song) }
+    if prevs.count > 0 { song = prevs.popLast() }
+    play()
+  }
+
+  func play() {
+    if let song = song {
+      player.play(url: api.url("/songs/\(song.id)"))
+    }
+  }
+
+  func toggle() {
+    if player.state == .paused { player.resume() }
+    else if player.state == .playing { player.pause() }
+
+    // publish changes to computed vars
+    objectWillChange.send()
+  }
+
+  var progress: Double { player.progress }
+  var duration: Double { player.duration }
+
+  // ----- AudioPlayerDelegate methods -----
+
+  // Tells the delegate that the player started playing
+  func audioPlayerDidStartPlaying(player: AudioPlayer, with entryId: AudioEntryId) {
+    // TODO(enricozb): update MPRemotePlayerInfo
+    isPlaying = true
+  }
+
+  // Tells the delegate that the player finished buffering for an entry.
+  // - note: May be called multiple times when seek is requested
+  func audioPlayerDidFinishBuffering(player: AudioPlayer, with entryId: AudioEntryId) {}
+
+  // Tells the delegate that the state has changed passing both the new state and previous.
+  func audioPlayerStateChanged(player: AudioPlayer, with newState: AudioPlayerState, previous: AudioPlayerState) {
+    isPlaying = newState == .playing
+  }
+
+  // Tells the delegate that an entry has finished
+  func audioPlayerDidFinishPlaying(player: AudioPlayer,
+                                   entryId: AudioEntryId,
+                                   stopReason: AudioPlayerStopReason,
+                                   progress: Double,
+                                   duration: Double)
+  {
+    // TODO(enricozb): enqueue next song
+    isPlaying = false
+  }
+
+  // Tells the delegate when an unexpected error occured.
+  // - note: Probably a good time to recreate the player when this occurs
+  func audioPlayerUnexpectedError(player: AudioPlayer, error: AudioPlayerError) {}
+
+  // Tells the delegate when cancel occurs, usually due to a stop or play (new source)
+  func audioPlayerDidCancel(player: AudioPlayer, queuedItems: [AudioEntryId]) {}
+
+  // Tells the delegate when a metadata read occurred from the stream.
+  func audioPlayerDidReadMetadata(player: AudioPlayer, metadata: [String: String]) {}
+}
+
 class NowPlaying: ObservableObject {
   private var player = AVPlayer()
 

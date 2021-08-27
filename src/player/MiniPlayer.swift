@@ -1,10 +1,10 @@
 import SwiftUI
 
 struct MiniPlayerPadding: View {
-  @EnvironmentObject var nowPlaying: NowPlaying
+  @EnvironmentObject var player: Player
 
   var body: some View {
-    if let _ = nowPlaying.song {
+    if let _ = player.song {
       Section(header: Color(UIColor.systemBackground)
         .frame(width: .infinity, height: MiniPlayer.MinHeight).padding(0)) {
           EmptyView()
@@ -86,10 +86,9 @@ struct MiniPlayerWideInfo: View {
 struct MiniPlayer: View {
   static let MinHeight: CGFloat = 70
 
+  let song: Song
   let maxWidth: CGFloat
   let maxHeight: CGFloat
-
-  @EnvironmentObject var nowPlaying: NowPlaying
 
   // maximized represents whether or not the miniplayer view is maximized
   @State private var maximized = false
@@ -98,26 +97,22 @@ struct MiniPlayer: View {
   @State private var drag: CGFloat? = nil
 
   var body: some View {
-    if let song = nowPlaying.song {
+    VStack(spacing: 0) {
+      Spacer()
+      Divider()
+
       VStack(spacing: 0) {
-        Spacer()
-        Divider()
-
-        VStack(spacing: 0) {
-          MiniPlayerNarrowInfo(width: maxWidth, song: song, lerp: lerp)
-          MiniPlayerWideInfo(width: maxWidth, song: song, lerp: lerp)
-        }
-        .frame(maxHeight: height)
-        .background(Blur(style: .systemChromeMaterial))
-        .mask(Rectangle().frame(height: height, alignment: .bottom))
-
-        Divider()
+        MiniPlayerNarrowInfo(width: maxWidth, song: song, lerp: lerp)
+        MiniPlayerWideInfo(width: maxWidth, song: song, lerp: lerp)
       }
-      .padding(.bottom, bottomPadding)
-      .gesture(tapDragGesture)
-    } else {
-      EmptyView()
+      .frame(maxHeight: height)
+      .background(Blur(style: .systemChromeMaterial))
+      .mask(Rectangle().frame(height: height, alignment: .bottom))
+
+      Divider()
     }
+    .padding(.bottom, bottomPadding)
+    .gesture(tapDragGesture)
   }
 
   var snapHeight: CGFloat { maximized ? maxHeight : MiniPlayer.MinHeight }

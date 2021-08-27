@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct AlbumDetail: View {
-  @EnvironmentObject var nowPlaying: NowPlaying
+  @EnvironmentObject var player: Player
 
   let album: Album
 
@@ -45,8 +45,7 @@ struct AlbumDetail: View {
       List {
         ForEach(album.songs.indices) { i in
           Button(action: {
-            nowPlaying.load(song: album.songs[i])
-            nowPlaying.enqueue(songs: album.songs[(i + 1)...])
+            player.playQueue(songs: album.songs[i...])
           }) {
             AlbumSongRow(song: album.songs[i])
           }
