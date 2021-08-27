@@ -8,7 +8,7 @@ include $(THEOS)/makefiles/common.mk
 
 APPLICATION_NAME = Mu
 
-Mu_FILES = $(wildcard *.swift)
+Mu_FILES = $(shell find lib -type f -name '*.swift') $(shell find src -type f -name '*.swift')
 Mu_FRAMEWORKS = UIKit CoreGraphics
 
 include $(THEOS_MAKE_PATH)/application.mk
