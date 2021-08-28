@@ -3,7 +3,8 @@ import MediaPlayer
 import SwiftUI
 
 class Player: ObservableObject, AudioPlayerDelegate {
-  private var player = AudioPlayer()
+  private let player = AudioPlayer()
+  private var background: BackgroundControls? = nil
 
   @Published var song: Song?
   @Published var isPlaying: Bool = false
@@ -13,6 +14,7 @@ class Player: ObservableObject, AudioPlayerDelegate {
   @Published var nexts: Deque<Song> = []
 
   init() {
+    background = BackgroundControls(player: self)
     player.delegate = self
   }
 
@@ -39,10 +41,20 @@ class Player: ObservableObject, AudioPlayerDelegate {
   }
 
   func play() {
+    do {
+      try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback)
+      try AVAudioSession.sharedInstance().setActive(true)
+    } catch {
+      log("AVAudioSession.sharedInstance: \(error)")
+    }
+
     if let song = song {
       player.play(url: api.url("/songs/\(song.id)"))
     }
   }
+
+  func pause() { player.pause() }
+  func resume() { player.resume() }
 
   func toggle() {
     if player.state == .paused { player.resume() }
@@ -52,8 +64,9 @@ class Player: ObservableObject, AudioPlayerDelegate {
     objectWillChange.send()
   }
 
-  var progress: Double { player.progress }
+  var elapsed: Double { player.progress }
   var duration: Double { player.duration }
+  var rate: Float { player.rate }
 
   // ----- AudioPlayerDelegate methods -----
 
@@ -61,6 +74,7 @@ class Player: ObservableObject, AudioPlayerDelegate {
   func audioPlayerDidStartPlaying(player: AudioPlayer, with entryId: AudioEntryId) {
     // TODO(enricozb): update MPRemotePlayerInfo
     isPlaying = true
+    background?.setSong(song: song!)
   }
 
   // Tells the delegate that the player finished buffering for an entry.
@@ -70,6 +84,7 @@ class Player: ObservableObject, AudioPlayerDelegate {
   // Tells the delegate that the state has changed passing both the new state and previous.
   func audioPlayerStateChanged(player: AudioPlayer, with newState: AudioPlayerState, previous: AudioPlayerState) {
     isPlaying = newState == .playing
+    background?.refreshState()
   }
 
   // Tells the delegate that an entry has finished
