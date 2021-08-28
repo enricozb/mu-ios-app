@@ -35,3 +35,17 @@ func log(_ msg: String, error: Error?) {
 func interp(start: Double, end: Double, t: Double) -> Double {
   return start + t * (end - start)
 }
+
+func formatTime(time: Float) -> String {
+  let time = Int(abs(time))
+
+  let hours = time / 3600
+  let minutes = time / 60 % 60
+  let seconds = time % 60
+
+  if hours == 0 {
+    return String(format: "%d:%02d", minutes, seconds)
+  } else {
+    return String(format: "%d:%02d:%02d", hours, minutes, seconds)
+  }
+}

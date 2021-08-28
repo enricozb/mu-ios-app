@@ -48,6 +48,13 @@ struct MiniPlayerNarrowInfo: View {
 }
 
 struct MiniPlayerWideInfo: View {
+  @EnvironmentObject var player: Player
+
+  let timer = Timer.publish(every: 0.5, on: .main, in: .common).autoconnect()
+  @State private var progress: Float = 0.01
+  @State private var elapsed: String = ""
+  @State private var remaining: String = ""
+
   let width: CGFloat
   let song: Song
   let lerp: Double
@@ -55,12 +62,22 @@ struct MiniPlayerWideInfo: View {
   var body: some View {
     VStack {
       // TODO(enricozb): hydrate these values
-      ProgressView(value: 0.3)
-      HStack {
-        Text("0:35").font(.caption)
-        Spacer()
-        Text("-3:07").font(.caption)
+      ProgressView(value: progress).onReceive(timer) { _ in
+        progress = player.progress ?? 0.01
+        if let duration = player.duration, let elapsed = player.elapsed {
+          self.elapsed = formatTime(time: Float(elapsed))
+          self.remaining = "-" + formatTime(time: Float(elapsed) - duration)
+        } else {
+          self.elapsed = ""
+          self.remaining = ""
+        }
       }
+      HStack {
+        Text(elapsed).font(Font.caption.monospacedDigit())
+        Spacer()
+        Text(remaining).font(Font.caption.monospacedDigit())
+      }
+      .padding(.bottom, 10)
 
       SongTitleAndAlbum(song: song, alignment: .center)
 
@@ -74,7 +91,8 @@ struct MiniPlayerWideInfo: View {
       VolumeSlider().frame(height: 40)
     }
     .padding(.top, 20)
-    .padding(.bottom, CGFloat(interp(start: -200, end: 10, t: lerp)))
+    // TODO(enricozb): this -500 fixes weird alignment when the miniplayer is minimized, but not sure what the /right/ value is
+    .padding(.bottom, CGFloat(interp(start: -500, end: 10, t: lerp)))
     .padding(.leading, progressPadding)
     .padding(.trailing, progressPadding)
     .opacity(2 * lerp - 1)
