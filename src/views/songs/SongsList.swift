@@ -8,6 +8,10 @@ struct Song: Codable, Identifiable, Hashable {
   var title: String
   var year: String?
   var track: String?
+
+  func url() -> URL {
+    return api.url("/songs/\(id)")
+  }
 }
 
 struct SongsList: View {

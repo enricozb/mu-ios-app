@@ -7,7 +7,7 @@ class BackgroundControls {
     self.player = player
 
     MPRemoteCommandCenter.shared().playCommand.addTarget { _ in
-      self.player.resume()
+      self.player.play()
       return .success
     }
 
@@ -44,8 +44,8 @@ class BackgroundControls {
     }
   }
 
-  func refreshState() {
-    MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.elapsed
+  func didChangePlayerRate() {
+    MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.elapsed ?? 0
     MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = player.rate
   }
 

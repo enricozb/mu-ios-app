@@ -1,3 +1,4 @@
+import AVFoundation
 import CoreData
 import SwiftUI
 import UIKit
@@ -20,6 +21,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     window = UIWindow(frame: UIScreen.main.bounds)
     window!.rootViewController = UIHostingController(rootView: contentView)
     window!.makeKeyAndVisible()
+
+    do {
+      try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback)
+      try AVAudioSession.sharedInstance().setActive(true)
+    } catch {
+      log("AVAudioSession.sharedInstance: \(error)")
+    }
 
     return true
   }
