@@ -22,9 +22,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     window!.rootViewController = UIHostingController(rootView: contentView)
     window!.makeKeyAndVisible()
 
+    let audioSession = AVAudioSession.sharedInstance()
     do {
-      try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback)
-      try AVAudioSession.sharedInstance().setActive(true)
+      try audioSession.setCategory(.playback)
+      try audioSession.setActive(true)
     } catch {
       log("AVAudioSession.sharedInstance: \(error)")
     }
