@@ -1,4 +1,5 @@
 import AVFoundation
+import AVKit
 import MediaPlayer
 import SwiftUI
 
@@ -62,8 +63,25 @@ func clamped<T>(x: T, min: T, max: T) -> T where T: Comparable {
 // https://muhammedtanriverdi.medium.com/swiftui-volume-slider-3fee7b238015
 struct VolumeSlider: UIViewRepresentable {
   func makeUIView(context: Context) -> MPVolumeView {
-    MPVolumeView(frame: .zero)
+    let view = MPVolumeView(frame: .zero)
+
+    // disable airplay picker
+    // https://stackoverflow.com/a/66320070
+    if let keyPathExists = view.value(forKey: #keyPath(MPVolumeView.showsRouteButton)) as? Bool, keyPathExists {
+      view.setValue(false, forKey: #keyPath(MPVolumeView.showsRouteButton))
+    }
+
+    return view
   }
 
   func updateUIView(_ view: MPVolumeView, context: Context) {}
+}
+
+// https://stackoverflow.com/a/62138637
+struct AirPlayPicker: UIViewRepresentable {
+  func makeUIView(context: Context) -> UIView {
+    return AVRoutePickerView(frame: .zero)
+  }
+
+  func updateUIView(_ uiView: UIView, context: Context) {}
 }

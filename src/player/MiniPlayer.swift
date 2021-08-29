@@ -88,7 +88,12 @@ struct MiniPlayerWideInfo: View {
       }
       .frame(maxWidth: .infinity)
 
-      VolumeSlider().frame(height: 40)
+      HStack {
+        VolumeSlider()
+        // TODO(enricozb): clicking this picker does nothing...
+        // AirPlayPicker()
+      }
+      .frame(height: 40)
     }
     .padding(.top, 20)
     // TODO(enricozb): this -500 fixes weird alignment when the miniplayer is minimized, but not sure what the /right/ value is
