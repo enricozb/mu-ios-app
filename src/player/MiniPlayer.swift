@@ -3,13 +3,20 @@ import SwiftUI
 struct MiniPlayerPadding: View {
   @EnvironmentObject var player: Player
 
+  var inPicker = false
+
   var body: some View {
     if let _ = player.song {
-      Section(header: Color(UIColor.systemBackground)
-        .frame(width: .infinity, height: MiniPlayer.MinHeight).padding(0)) {
+      if inPicker {
+        Color.clear.frame(width: .infinity, height: MiniPlayer.MinHeight).padding(0)
+      } else {
+        Section(header:
+          Color(UIColor.systemBackground)
+            .frame(width: .infinity, height: MiniPlayer.MinHeight).padding(0)) {
           EmptyView()
+        }
+        .listRowInsets(EdgeInsets())
       }
-      .listRowInsets(EdgeInsets())
     }
   }
 }
