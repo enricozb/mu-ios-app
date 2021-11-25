@@ -111,7 +111,7 @@ class Player: NSObject, ObservableObject {
     backgroundControls!.didChangePlayerRate()
   }
 
-  @objc func didFinishPlaying(_ notification: NSNotification) {
+  @objc func didFinishPlaying(_: NSNotification) {
     next()
   }
 
