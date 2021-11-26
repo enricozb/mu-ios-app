@@ -23,8 +23,9 @@ struct SlidePicker: View {
         MiniPlayerPadding(inPicker: true)
       }
       .frame(width: 15)
-      .background(Color.clear)
-      // https://stackoverflow.com/questions/61352171/swiftui-custom-button-does-not-recognize-touch-with-clear-background-and-button      .contentShape(Rectangle())
+      .background(Color.red.opacity(0.000001))
+      // https://stackoverflow.com/questions/61352171/swiftui-custom-button-does-not-recognize-touch-with-clear-background-and-button
+      // .contentShape(Rectangle())
       .gesture(DragGesture().onChanged { value in
         let letter = letterFromGesture(y: value.location.y)
 
