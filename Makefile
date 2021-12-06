@@ -1,6 +1,4 @@
-# THEOS_DEVICE_IP = 192.168.2.116
-# temporary while working remotely
-THEOS_DEVICE_IP = 192.168.1.173
+THEOS_DEVICE_IP = 192.168.1.113
 TARGET := iphone:clang:14.4
 INSTALL_TARGET_PROCESSES = Mu
 
